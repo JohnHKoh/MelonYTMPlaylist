@@ -1,7 +1,7 @@
 import json
 import melon_retriever
 from ytmusicapi import YTMusic
-from datetime import date, datetime
+from datetime import date
 
 f = open('config.json')
 config = json.load(f)
