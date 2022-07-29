@@ -1,7 +1,7 @@
 import json
 import melon_retriever
 from ytmusicapi import YTMusic
-from datetime import date
+from datetime import date, datetime
 
 f = open('config.json')
 config = json.load(f)
@@ -30,5 +30,19 @@ ytmusic.add_playlist_items(playlistId, toAdd, duplicates=True)
 print("All items added")
 
 print("Updating playlist description...")
-ytmusic.edit_playlist(playlistId, description="Auto-updating Melon Daily chart. Last updated {}".format(date.today()))
+today = date.today();
+today_str = today.strftime("%Y.%m.%d")
+description = """
+Melon(Korean: 멜론) is a South Korean online music store and music streaming service. 
+They have a daily chart of the top 100 songs that reflects streaming 40% + download 60% of weekly service usage. This is the daily(일간) chart of Korean domestic songs(국내종합).
+
+
+https://www.melon.com/chart/day/index.htm?classCd=DM0000
+
+Updated for: {}
+
+This playlist is auto-generated.
+View the code here: https://github.com/JohnHKoh/MelonYTMPlaylist
+""".format(today_str)
+ytmusic.edit_playlist(playlistId, description=description)
 print("Playlist description updated")
