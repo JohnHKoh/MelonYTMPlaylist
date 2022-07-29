@@ -26,5 +26,5 @@ jobs:
           cd ./MelonYTMPlaylist
           echo "$RAW_HEADERS" >> raw_headers.txt
           echo "{\"brand_account\": \"$BRAND_ACCOUNT\",\"playlist_id\": \"$PLAYLIST_ID\"}" >> config.json
-          python setup.py
-          python daily.py
+          python src/setup.py
+          python src/daily.py

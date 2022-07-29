@@ -3,13 +3,13 @@ import melon_retriever
 from ytmusicapi import YTMusic
 from datetime import date
 
-f = open('config.json')
+f = open('../config.json')
 config = json.load(f)
 
 if ('brand_account' in config):
-    ytmusic = YTMusic('headers_auth.json', config['brand_account'], language="ko")
+    ytmusic = YTMusic('../headers_auth.json', config['brand_account'], language="ko")
 else:
-    ytmusic = YTMusic('headers_auth.json', language="ko")
+    ytmusic = YTMusic('../headers_auth.json', language="ko")
 
 playlistId = config['playlist_id']
 playlist = ytmusic.get_playlist(playlistId)
