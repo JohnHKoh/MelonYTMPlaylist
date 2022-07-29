@@ -24,3 +24,11 @@ See the "examples/" folder for examples of how "raw_headers.txt" and "config.jso
 3. Run `python daily.py`.
 
 The playlist specified in the "config.json"'s `playlist_id` should now be updated with the latest songs.
+
+### Disclaimer
+The code searches YouTube Music's song catalog using a song's title, artist, and album provided by Melon. While this usually returns the correct song, there is a chance that it does not so there is a chance this script does not work 100%. Such instances have been added under "data/manual_fixes".
+
+### To Do
+- Add Top 100, Weekly, and Monthly charts
+- Use some string compare algorithm to see if the wrong song has been found and remediate automatically. This could mean searching for the album instead and searching the song in there.
+- Add genre filtering options that Melon offers ![](https://i.imgur.com/D1w9RBg.png)
