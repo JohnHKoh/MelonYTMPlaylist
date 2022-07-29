@@ -1,4 +1,4 @@
-raw_headers.txt
-config.json
 __pycache__
-headers_auth.json
+/config.json
+/headers_auth.json
+/raw_headers.txt
