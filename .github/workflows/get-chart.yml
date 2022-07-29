@@ -1,6 +1,9 @@
 name: Update Melon Playlist
 
 on: 
+  schedule:
+      # Runs at 5:05 UTC every day
+      - cron: '5 5 * * *'
   workflow_dispatch:
 
 jobs:
