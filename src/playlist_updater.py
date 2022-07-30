@@ -147,7 +147,7 @@ class PlaylistUpdater:
         if album is None:
             return None
 
-        Util.log("Retreiving album '{}' by '{}'.".format(album['title'], ', '.join([artist['name'] for artist in album['artists']])), 4)
+        Util.log("Retrieving album '{}' by '{}'.".format(album['title'], ', '.join([artist['name'] for artist in album['artists']])), 4)
         album = self.ytmusic.get_album(album['browseId'])
         tracks = album['tracks']
         for i, track in enumerate(tracks):
