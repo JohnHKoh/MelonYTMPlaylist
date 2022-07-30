@@ -19,13 +19,11 @@ jobs:
           pip install pyquery
       - name: Run script
         env:
-          BRAND_ACCOUNT: ${{ secrets.BRAND_ACCOUNT }}
           RAW_HEADERS: ${{ secrets.RAW_HEADERS }}
-          PLAYLIST_ID: ${{ secrets.PLAYLIST_ID }}
         run: |
           cd ./MelonYTMPlaylist
           echo "$RAW_HEADERS" >> raw_headers.txt
-          echo "{\"brand_account\": \"$BRAND_ACCOUNT\",\"playlist_id\": \"$PLAYLIST_ID\"}" >> config.json
+          echo "$CONFIG_JSON" >> config.json
           cd src
           python setup.py
           python daily.py

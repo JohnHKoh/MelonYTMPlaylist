@@ -1,13 +1,20 @@
 from pyquery import PyQuery as pq
 from song import Song
+from util import Util
 
 def get_daily():
+    """
+    Gets Melon Daily Top 100 List as list of `Song` objects
 
+    :return: List with Melon Daily Top 100 songs
+    """
+    url = Util.get_config()['playlists']['daily']['url']
+    return get_melon_songs(url)
+    
+def get_melon_songs(url):
     songs = []
 
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'}
-    url = 'https://www.melon.com/chart/day/index.htm?classCd=DM0000'
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'}
     
     d = pq(url, headers=headers)
     songs_info = d("#tb_list tbody tr td:nth-child(6)")
