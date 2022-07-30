@@ -26,7 +26,7 @@ See the "examples/" folder for examples of how "raw_headers.txt" and "config.jso
 The playlist specified in the "config.json"'s `playlist_id` should now be updated with the latest songs.
 
 ### Disclaimer
-The code searches YouTube Music's song catalog using a song's title, artist, and album provided by Melon. While this usually returns the correct song, there is a chance that it does not so there is a chance this script does not work 100%. Such instances have been added under "data/manual_fixes".
+The code searches YouTube Music's song catalog using a song's title, artist, and album provided by Melon. While this usually returns the correct song, there is a chance that it does not so there is a chance this script does not work 100%. To mitigate such instances, the "manual_fixes.json" file has been added to account for problematic songs.
 
 ### To Do
 - Add Top 100, Weekly, and Monthly charts
