@@ -20,7 +20,7 @@ jobs:
       - name: Run script
         env:
           RAW_HEADERS: ${{ secrets.RAW_HEADERS }}
-          CONFIG_JSON: ${{ secrest.CONFIG_JSON }}
+          CONFIG_JSON: ${{ secrets.CONFIG_JSON }}
         run: |
           cd ./MelonYTMPlaylist
           echo "$RAW_HEADERS" >> raw_headers.txt
