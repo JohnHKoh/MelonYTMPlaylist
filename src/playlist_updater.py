@@ -13,6 +13,11 @@ def create_ytm(config):
 
     return ytmusic
 
+def similar_artist(a, b):
+    a = a.lower()
+    b = b.lower()
+    return a in b or b in a or Util.similar(a, b)
+
 class PlaylistUpdater:
 
     config = Util.get_config()
@@ -33,14 +38,16 @@ class PlaylistUpdater:
         Util.log("Starting playlist update at {}...".format(datetime.now()))
         self.playlistId = self.config['playlists'][listName]['playlist_id']
         self.playlist = self.ytmusic.get_playlist(self.playlistId)
-
-        if len(self.playlist['tracks']) > 0:
-            self.clear_playlist()
         
-        to_add = self.get_song_ids(songs)
-        self.add_playlist_items(to_add)
-        self.update_playlist_description(listName, description)
-
+        try:
+            to_add = self.get_song_ids(songs)
+            if len(self.playlist['tracks']) > 0:
+                self.clear_playlist()
+            self.add_playlist_items(to_add)
+            self.update_playlist_description(listName, description)
+        except Exception as e:
+            Util.log("Encounter exception while trying to update playlist. {}".format(str(e)))
+        
         Util.log("Playlist update completed at {}.".format(datetime.now()))
 
     def update_playlist_description(self, listName, description):
@@ -129,7 +136,7 @@ class PlaylistUpdater:
 
             Util.log("Checking result #{}: '{}' by '{}' from '{}'".format(i + 1, this_song.title, this_song.artist, this_song.album), 3)
 
-            if Util.similar(song.title, this_song.title) and Util.similar(song.artist, this_song.artist) and Util.similar(song.album, this_song.album):
+            if Util.similar(song.title, this_song.title) and similar_artist(song.artist, this_song.artist) and Util.similar(song.album, this_song.album):
                 Util.log("Match found.", 4)
                 return this_song
         

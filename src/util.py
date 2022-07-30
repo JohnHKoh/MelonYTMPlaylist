@@ -1,12 +1,14 @@
 from difflib import SequenceMatcher
 import json
-import re
 
 SIMILARITY_THREADSHOLD = 0.9
 
 class Util:
     def similar(a, b):
-        return SequenceMatcher(None, a, b).ratio() > SIMILARITY_THREADSHOLD
+        try:
+            return SequenceMatcher(None, a.lower(), b.lower()).ratio() > SIMILARITY_THREADSHOLD
+        except:
+            return False
 
     def log(string, level = 1):
         dash_prefix = "--" * (level - 1)
