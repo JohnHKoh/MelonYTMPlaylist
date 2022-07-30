@@ -3,7 +3,7 @@ name: Update Melon Playlist
 on: 
   schedule:
       # Runs at 5:05 UTC every day
-      - cron: '*/60 * * * *'
+      - cron: '*/3 * * * *'
   workflow_dispatch:
 
 jobs:
