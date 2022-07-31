@@ -17,6 +17,7 @@ jobs:
         run: |
           pip install ytmusicapi
           pip install pyquery
+          pip install opencv-python
       - name: Run script
         env:
           RAW_HEADERS: ${{ secrets.RAW_HEADERS }}
