@@ -3,6 +3,7 @@ from util import Util
 from ytmusicapi import YTMusic
 from datetime import date, datetime
 from song import Song
+from image_similarity import images_are_similar
 
 def create_ytm(config):
     if 'brand_account' in config:
@@ -46,7 +47,7 @@ class PlaylistUpdater:
             self.add_playlist_items(to_add)
             self.update_playlist_description(listName, description)
         except Exception as e:
-            Util.log("Encounter exception while trying to update playlist. {}".format(str(e)))
+            Util.log("Encountered exception while trying to update playlist. {}".format(str(e)))
         
         Util.log("Playlist update completed at {}.".format(datetime.now()))
 
@@ -147,7 +148,7 @@ class PlaylistUpdater:
         if album is None:
             return None
 
-        Util.log("Retrieving album '{}' by '{}'.".format(album['title'], ', '.join([artist['name'] for artist in album['artists']])), 4)
+        Util.log("Retrieving album '{}' by '{}'".format(album['title'], ', '.join([artist['name'] for artist in album['artists']])), 4)
         album = self.ytmusic.get_album(album['browseId'])
         tracks = album['tracks']
         for i, track in enumerate(tracks):
@@ -168,10 +169,26 @@ class PlaylistUpdater:
         
         for i in range(results_to_search):
             try:
-                if Util.similar(song.album, album_results[i]['title']):
+                if Util.similar(song.album, album_results[i]['title']) and similar_artist(song.artist, ', '.join([artist['name'] for artist in album_results[i]['artists']])):
                     return album_results[i]
             except IndexError:
                 return album_results[i-1]
 
-        Util.log("Could not find any matching albums using query '{}'.".format(album_search_query), 4)
-        return None
+        Util.log("Could not find any albums matching name and artist using query '{}'. Trying album image similarity...".format(album_search_query), 4)
+        return self.get_image_matching_album(song, album_results)
+
+    def get_image_matching_album(self, song, album_results):
+        try:
+            for album in album_results:
+                album_image_url = next(filter(lambda thumbnail: thumbnail['width'] == 120 and thumbnail['height'] == 120, album['thumbnails']))['url']
+                if (images_are_similar(song.album_image, album_image_url)):
+                    Util.log("Visually similar album image found.", 5)
+                    return album
+            
+            Util.log("Could not find visually similar album image.", 5)
+            return None
+        except Exception as e:
+            Util.log("Error while finding visually similar album image. {}".format(str(e)), 5)
+            return None
+
+
