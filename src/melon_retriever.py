@@ -10,6 +10,16 @@ def get_daily():
     """
     url = Util.get_config()['playlists']['daily']['url']
     return get_melon_songs(url)
+
+def get_weekly():
+    """
+    Gets Melon Weekly Top 100 List as list of `Song` objects
+
+    :return: List with Melon Daily Top 100 songs
+    """
+    url = Util.get_config()['playlists']['weekly']['url']
+    return get_melon_songs(url)
+
     
 def get_melon_songs(url):
     songs = []

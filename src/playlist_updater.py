@@ -1,7 +1,7 @@
 import json
 from util import Util
 from ytmusicapi import YTMusic
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from song import Song
 from image_similarity import images_are_similar
 
@@ -53,9 +53,15 @@ class PlaylistUpdater:
 
     def update_playlist_description(self, listName, description):
         Util.log("Updating playlist description...")
+        date_str = "Unknown"
         today = date.today()
-        today_str = today.strftime("%Y.%m.%d")
-        description = description.format(playlist_url=self.config['playlists'][listName]['url'], today=today_str)
+        if listName == "daily":
+            date_str = today.strftime("%Y.%m.%d")
+        if listName == "weekly":
+            past_monday = today - timedelta(days=today.weekday(), weeks=1)
+            past_sunday = past_monday + timedelta(days=6)
+            date_str = "{past_monday} ~ {past_sunday}".format(past_monday=past_monday.strftime("%Y.%m.%d"), past_sunday=past_sunday.strftime("%Y.%m.%d"))
+        description = description.format(playlist_url=self.config['playlists'][listName]['url'], date=date_str)
         edit_response = self.ytmusic.edit_playlist(self.playlistId, description=description)
         if 'SUCCEEDED' in edit_response:
             Util.log("Playlist description updated.")

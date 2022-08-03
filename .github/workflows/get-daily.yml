@@ -1,4 +1,4 @@
-name: Update Melon Playlist
+name: Daily Melon Playlist
 
 on: 
   schedule:
