@@ -2,7 +2,7 @@ name: Weekly Melon Playlist
 
 on: 
   schedule:
-      # Runs at 5:05 UTC every day
+      # Runs at 5:05 UTC every Monday
       - cron: '5 5 * * MON'
   workflow_dispatch:
 
