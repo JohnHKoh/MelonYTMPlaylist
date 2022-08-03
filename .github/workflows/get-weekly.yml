@@ -28,4 +28,4 @@ jobs:
           echo "$CONFIG_JSON" >> config.json
           cd src
           python setup.py
-          python daily.py
+          python weekly.py
