@@ -26,7 +26,7 @@ def get_melon_songs(url):
 
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'}
     
-    d = pq(url, headers=headers)
+    d = pq(url=url, headers=headers)
     album_images = d("#tb_list tbody tr td:nth-child(4)")
     song_album_images = album_images.find("img")
     songs_info = d("#tb_list tbody tr td:nth-child(6)")
