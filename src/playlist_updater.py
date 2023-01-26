@@ -42,7 +42,7 @@ class PlaylistUpdater:
         
         try:
             to_add = self.get_song_ids(songs)
-            if len(self.playlist['tracks']) > 0:
+            if bool(self.playlist.get('tracks')) and len(self.playlist['tracks']) > 0:
                 self.clear_playlist()
             self.add_playlist_items(to_add)
             self.update_playlist_description(listName, description)
