@@ -35,6 +35,7 @@ The code searches YouTube Music's song catalog using a song's title, artist, and
 To mitigate such instances, the "data/manual_fixes.json" file has been added to account for problematic songs.
 
 ### To Do
-- Add Top 100, Weekly, and Monthly charts
+- Add Top 100, ~~Weekly~~, and Monthly charts
 - Use some string compare algorithm to see if the wrong song has been found and remediate automatically. This could mean searching for the album instead and searching the song in there.
 - Add genre filtering options that Melon offers ![](https://i.imgur.com/D1w9RBg.png)
+- Cache song results

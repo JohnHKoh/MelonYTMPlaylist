@@ -4,6 +4,7 @@ from ytmusicapi import YTMusic
 from datetime import date, datetime, timedelta
 from song import Song
 from image_similarity import images_are_similar
+import sys
 
 def create_ytm(config):
     if 'brand_account' in config:
@@ -21,6 +22,7 @@ def similar_artist(a, b):
 
 class PlaylistUpdater:
 
+    RETRY_COUNT = 3;
     config = Util.get_config()
     ytmusic = create_ytm(config)
 
@@ -30,6 +32,34 @@ class PlaylistUpdater:
     def update_playlist(self, songs, listName, description):
         """
         Updates playlist from config with song list
+
+        :param songs: List of `Song` objects
+        :param listName: Key to search `playlists` value in "config.json"
+        :param description: Updated description of playlist. Can specify `{playlist_url}` and `{today}` to be formatted
+        """
+        success = False
+        for i in range(self.RETRY_COUNT):
+            try:
+                Util.log("Playlist update attempt #{}...".format(i + 1))
+                self._update_playlist(songs, listName, description)
+                trackCount = self.get_playlist_trackCount()
+                if trackCount != 100:
+                    raise Exception("get_playlist_trackCount returned {} instead of 100.".format(trackCount))
+                success = True
+                break
+            except Exception as e:
+                Util.log("Encountered exception in playlist update loop. {}".format(str(e)))
+
+        if success:
+            Util.log("Playlist update completed at {}.".format(datetime.now()))
+            sys.exit(0)
+        else:
+            Util.log("Playlist update failed at {}.".format(datetime.now()))
+            sys.exit(1)
+
+    def _update_playlist(self, songs, listName, description):
+        """
+        Internal function to updates playlist from config with song list
 
         :param songs: List of `Song` objects
         :param listName: Key to search `playlists` value in "config.json"
@@ -49,7 +79,7 @@ class PlaylistUpdater:
         except Exception as e:
             Util.log("Encountered exception while trying to update playlist. {}".format(str(e)))
         
-        Util.log("Playlist update completed at {}.".format(datetime.now()))
+        Util.log("Playlist update attempt completed at {}.".format(datetime.now()))
 
     def update_playlist_description(self, listName, description):
         Util.log("Updating playlist description...")
@@ -68,6 +98,10 @@ class PlaylistUpdater:
         else:
             Util.log("Playlist description could not be updated.")
             Util.log(json.dumps(edit_response))
+
+    def get_playlist_trackCount(self):
+        get_response = self.ytmusic.get_playlist(self.playlistId, 1)
+        return get_response['trackCount']
 
     def add_playlist_items(self, song_ids):
         Util.log("Adding playlist items (total: {})...".format(len(song_ids)))
