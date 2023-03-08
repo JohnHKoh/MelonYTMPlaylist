@@ -5,6 +5,7 @@ from datetime import date, datetime, timedelta
 from song import Song
 from image_similarity import images_are_similar
 import sys
+import time
 
 def create_ytm(config):
     if 'brand_account' in config:
@@ -22,7 +23,8 @@ def similar_artist(a, b):
 
 class PlaylistUpdater:
 
-    RETRY_COUNT = 3;
+    RETRY_COUNT = 3
+    SONG_COUNT = 100
     config = Util.get_config()
     ytmusic = create_ytm(config)
 
@@ -37,14 +39,21 @@ class PlaylistUpdater:
         :param listName: Key to search `playlists` value in "config.json"
         :param description: Updated description of playlist. Can specify `{playlist_url}` and `{today}` to be formatted
         """
+        self.playlistId = self.config['playlists'][listName]['playlist_id']
         success = False
         for i in range(self.RETRY_COUNT):
             try:
                 Util.log("Playlist update attempt #{}...".format(i + 1))
-                self._update_playlist(songs, listName, description)
-                trackCount = self.get_playlist_trackCount()
-                if trackCount != 100:
-                    raise Exception("get_playlist_trackCount returned {} instead of 100.".format(trackCount))
+                self.playlist = self.get_playlist()
+                self._update_playlist(self.playlist, songs, listName, description)
+                Util.log("Verifying update...")
+                Util.log("Getting playlist...", 2)
+                playlist = self.get_playlist()
+                Util.log("Playlist retrieved.", 2)
+                trackCount = playlist['trackCount']
+                Util.log("Playlist trackCount is {}.".format(trackCount), 2)
+                if trackCount != self.SONG_COUNT:
+                    raise Exception("'trackCount' returned {} instead of {}.".format(trackCount, self.SONG_COUNT))
                 success = True
                 break
             except Exception as e:
@@ -57,7 +66,7 @@ class PlaylistUpdater:
             Util.log("Playlist update failed at {}.".format(datetime.now()))
             sys.exit(1)
 
-    def _update_playlist(self, songs, listName, description):
+    def _update_playlist(self, playlist, songs, listName, description):
         """
         Internal function to updates playlist from config with song list
 
@@ -67,17 +76,20 @@ class PlaylistUpdater:
         """
 
         Util.log("Starting playlist update at {}...".format(datetime.now()))
-        self.playlistId = self.config['playlists'][listName]['playlist_id']
-        self.playlist = self.ytmusic.get_playlist(self.playlistId)
         
+        # Various sleep calls seem to prevent transient 409 Conflict errors
         try:
             to_add = self.get_song_ids(songs)
-            if bool(self.playlist.get('tracks')) and len(self.playlist['tracks']) > 0:
+            if playlist['trackCount'] > 0:
                 self.clear_playlist()
+                time.sleep(3)
             self.add_playlist_items(to_add)
+            time.sleep(3)
             self.update_playlist_description(listName, description)
+            time.sleep(3)
         except Exception as e:
             Util.log("Encountered exception while trying to update playlist. {}".format(str(e)))
+            raise e
         
         Util.log("Playlist update attempt completed at {}.".format(datetime.now()))
 
@@ -99,9 +111,8 @@ class PlaylistUpdater:
             Util.log("Playlist description could not be updated.")
             Util.log(json.dumps(edit_response))
 
-    def get_playlist_trackCount(self):
-        get_response = self.ytmusic.get_playlist(self.playlistId, 1)
-        return get_response['trackCount']
+    def get_playlist(self):
+        return self.ytmusic.get_playlist(self.playlistId, None)
 
     def add_playlist_items(self, song_ids):
         Util.log("Adding playlist items (total: {})...".format(len(song_ids)))
@@ -115,7 +126,7 @@ class PlaylistUpdater:
     def get_song_ids(self, songs):
         to_add = []
 
-        for i in range(100):
+        for i in range(self.SONG_COUNT):
             song = self.get_song(songs[i], i)
             if song is None:
                 continue
