@@ -50,7 +50,7 @@ class PlaylistUpdater:
                 Util.log("Getting playlist...", 2)
                 playlist = self.get_playlist()
                 Util.log("Playlist retrieved.", 2)
-                trackCount = playlist['trackCount']
+                trackCount = len(playlist['tracks']) # Buggy 'trackCount' key, use 'tracks' array length instead
                 Util.log("Playlist trackCount is {}.".format(trackCount), 2)
                 if trackCount != self.SONG_COUNT:
                     raise Exception("'trackCount' returned {} instead of {}.".format(trackCount, self.SONG_COUNT))
