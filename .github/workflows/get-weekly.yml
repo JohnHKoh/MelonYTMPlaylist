@@ -15,9 +15,9 @@ jobs:
           git clone https://github.com/JohnHKoh/MelonYTMPlaylist.git
       - name: Install dependencies
         run: |
-          pip install ytmusicapi
-          pip install pyquery
-          pip install opencv-python
+          python -m pip install ytmusicapi
+          python -m pip install pyquery
+          python -m pip install opencv-python
       - name: Run script
         env:
           RAW_HEADERS: ${{ secrets.RAW_HEADERS }}
