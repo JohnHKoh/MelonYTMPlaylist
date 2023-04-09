@@ -15,7 +15,7 @@ jobs:
           git clone https://github.com/JohnHKoh/MelonYTMPlaylist.git
       - name: Install dependencies
         run: |
-          python3 -m pip install ytmusicapi
+          python3 -m pip install ytmusicapi==0.25.2
           python3 -m pip install pyquery
           python3 -m pip install opencv-python
       - name: Run script
