@@ -195,21 +195,25 @@ class PlaylistUpdater:
         return None
 
     def get_match_from_album(self, song):
-        album = self.get_matching_album(song)
-        if album is None:
+        try:
+            album = self.get_matching_album(song)
+            if album is None:
+                return None
+
+            Util.log("Retrieving album '{}' by '{}'".format(album['title'], ', '.join([artist['name'] for artist in album['artists']])), 4)
+            album = self.ytmusic.get_album(album['browseId'])
+            tracks = album['tracks']
+            for i, track in enumerate(tracks):
+                this_album_song = Song.MakeSong(track)
+                Util.log("Checking track #{}: '{}'".format(i + 1, this_album_song.title), 5)
+                if Util.similar(song.title, this_album_song.title):
+                    Util.log("Match found.", 6)
+                    return this_album_song
+
             return None
-
-        Util.log("Retrieving album '{}' by '{}'".format(album['title'], ', '.join([artist['name'] for artist in album['artists']])), 4)
-        album = self.ytmusic.get_album(album['browseId'])
-        tracks = album['tracks']
-        for i, track in enumerate(tracks):
-            this_album_song = Song.MakeSong(track)
-            Util.log("Checking track #{}: '{}'".format(i + 1, this_album_song.title), 5)
-            if Util.similar(song.title, this_album_song.title):
-                Util.log("Match found.", 6)
-                return this_album_song
-
-        return None
+        except Exception as e:
+            Util.log("Encountered exception while attempting to get match from album. {}".format(str(e)))
+            return None
 
     def get_matching_album(self, song, results_to_search = 3):
         album_search_query = "{} {}".format(song.artist, song.album).strip()

@@ -4,6 +4,10 @@
         "daily": {
             "url": "https://www.melon.com/chart/day/index.htm?classCd=DM0000",
             "playlist_id": "PLnlxKMP5GzKCXJ3Cw99qSWgC01cuhTFxG"
+        },
+        "weekly": {
+            "url": "https://www.melon.com/chart/week/index.htm?classCd=DM0000",
+            "playlist_id": "PLnlxKMP5GzKCLJGF7P0tUl_44CV7-vdUC"
         }
     }
 }

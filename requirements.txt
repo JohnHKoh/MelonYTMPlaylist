@@ -1,0 +1,11 @@
+certifi==2023.7.22
+charset-normalizer==3.3.1
+cssselect==1.2.0
+idna==3.4
+lxml==4.9.3
+numpy==1.26.1
+opencv-python==4.8.1.78
+pyquery==2.0.0
+requests==2.31.0
+urllib3==2.0.7
+ytmusicapi==0.25.2

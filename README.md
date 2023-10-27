@@ -7,16 +7,18 @@ This project uses [ytmusicapi: Unofficial API for YouTube Music](https://ytmusic
 
 ### Setup
 1. Install [Python 3](https://www.python.org/downloads/).
-2. Create a "raw_headers.txt" in the root directory with the [instructions found here](https://ytmusicapi.readthedocs.io/en/stable/setup/browser.html#copy-authentication-headers).
-3. Create a "config.json" in the root directory with the following information:
+2. Run `pip install -r requirements.txt`.
+3. Create a "raw_headers.txt" in the root directory with the [instructions found here](https://ytmusicapi.readthedocs.io/en/stable/setup/browser.html#copy-authentication-headers).
+4. Create a "config.json" in the root directory with the following information:
 ```
 {
     "brand_account": "<optional brand account ID>",
-    "playlist": {
+    "playlists": {
         "daily": {
             "url": "<playlist url>",
             "playlist_id": "<playlist id>"
         }
+    }
 }
 ```
 
