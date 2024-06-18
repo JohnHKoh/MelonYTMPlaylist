@@ -16,7 +16,7 @@ jobs:
           cd MelonYTMPlaylist
       - name: Install dependencies
         run: |
-          python3 -m pip install requirements.txt
+          python3 -m pip install -r requirements.txt
       - name: Run script
         env:
           RAW_HEADERS: ${{ secrets.RAW_HEADERS }}
