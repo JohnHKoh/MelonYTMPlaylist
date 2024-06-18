@@ -1,9 +1,9 @@
 name: Daily Melon Playlist
 
-on: 
+on:
   schedule:
-      # Runs at 5:05 UTC every day
-      - cron: '5 5 * * *'
+    # Runs at 5:05 UTC every day
+    - cron: "5 5 * * *"
   workflow_dispatch:
 
 jobs:
@@ -13,17 +13,15 @@ jobs:
       - name: Checkout repository
         run: |
           git clone https://github.com/JohnHKoh/MelonYTMPlaylist.git
+          cd MelonYTMPlaylist
       - name: Install dependencies
         run: |
-          python3 -m pip install ytmusicapi==0.25.2
-          python3 -m pip install pyquery
-          python3 -m pip install opencv-python
+          python3 -m pip install requirements.txt
       - name: Run script
         env:
           RAW_HEADERS: ${{ secrets.RAW_HEADERS }}
           CONFIG_JSON: ${{ secrets.CONFIG_JSON }}
         run: |
-          cd ./MelonYTMPlaylist
           echo "$RAW_HEADERS" >> raw_headers.txt
           echo "$CONFIG_JSON" >> config.json
           cd src
