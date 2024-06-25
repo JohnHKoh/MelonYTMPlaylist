@@ -8,4 +8,3 @@ opencv-python==4.8.1.78
 pyquery==2.0.0
 requests==2.31.0
 urllib3==2.0.7
-ytmusicapi==0.25.2

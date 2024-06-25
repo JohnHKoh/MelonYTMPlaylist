@@ -17,6 +17,7 @@ jobs:
         run: |
           cd MelonYTMPlaylist
           python3 -m pip install -r requirements.txt
+          python3 -m pip install packages/ytmusicapi-1.7.4.dev3+gffc0eba.tar.gz
       - name: Run script
         env:
           RAW_HEADERS: ${{ secrets.RAW_HEADERS }}

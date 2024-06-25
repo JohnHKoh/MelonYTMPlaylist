@@ -6,6 +6,7 @@ from song import Song
 from image_similarity import images_are_similar
 import sys
 import time
+import traceback
 
 def create_ytm(config):
     if 'brand_account' in config:
@@ -58,6 +59,7 @@ class PlaylistUpdater:
                 break
             except Exception as e:
                 Util.log("Encountered exception in playlist update loop. {}".format(str(e)))
+                Util.log(traceback.print_exc())
 
         if success:
             Util.log("Playlist update completed at {}.".format(datetime.now()))
