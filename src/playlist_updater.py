@@ -149,7 +149,7 @@ class PlaylistUpdater:
 
 
     def get_song(self, song, index):
-        search_query = "{} {} {}".format(song.title, song.artist, song.album).strip()
+        search_query = "{} {} {}".format(song.title, song.artist, song.album).strip().replace('\xa0', ' ')
         manual_fixes = Util.get_manual_fixes()
 
         Util.log("#{}: Searching for '{}'".format(index + 1, search_query), 2)
