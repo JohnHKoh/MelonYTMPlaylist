@@ -208,9 +208,27 @@ class PlaylistUpdater:
             for i, track in enumerate(tracks):
                 this_album_song = Song.MakeSong(track)
                 Util.log("Checking track #{}: '{}'".format(i + 1, this_album_song.title), 5)
+                
                 if Util.similar(song.title, this_album_song.title):
-                    Util.log("Match found.", 6)
-                    return this_album_song
+					# Check videoType of the current track
+                    if track.get('videoType') == 'MUSIC_VIDEO_TYPE_ATV':
+                        Util.log("Match found.", 6)
+                        return this_album_song
+                    else:
+                        # If not ATV, re-search with 'songs' filter
+                        Util.log("Match found, but it's an Official Music Video. Re-searching for an Art Track Video...", 5)
+                        refined_query = "{} {}".format(this_album_song.title, this_album_song.artist)
+                        refined_results = self.ytmusic.search(refined_query, filter="songs")
+                        
+                        # Check if there's a match via re-search.
+                        official_match = self.get_match_from_top_results(this_album_song, refined_results)
+                        if official_match:
+                            Util.log("Art Track Video found via re-search.", 4)
+                            return official_match
+                        
+                        # If none, return the original result.
+                        Util.log("Art Track Video not found. Falling back to original track.", 4)
+                        return this_album_song
 
             return None
         except Exception as e:
