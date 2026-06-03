@@ -4,7 +4,6 @@ from ytmusicapi import YTMusic
 from datetime import date, datetime, timedelta
 from song import Song
 from image_similarity import images_are_similar
-from video_type import VideoType
 import sys
 import time
 import traceback
@@ -209,41 +208,12 @@ class PlaylistUpdater:
             for i, track in enumerate(tracks):
                 this_album_song = Song.MakeSong(track)
                 Util.log("Checking track #{}: '{}'".format(i + 1, this_album_song.title), 5)
-                
                 if Util.similar(song.title, this_album_song.title):
-					# Check videoType of the current track
-                    if this_album_song.video_type == VideoType.ATV:
-                        Util.log("Match found.", 6)
-                        return this_album_song
-                    else:
-                        # If not ATV, find 'counterpart' id
-                        Util.log("Match found, but it's an Official Music Video. Re-searching for an Artist Track Video...", 5)
-                        counterpart_id = self.get_counterpart_id(this_album_song.video_id, VideoType.ATV)
-                        
-                        # Check if there's a match via counterpart
-                        if counterpart_id is not None:
-                            Util.log("Artist Track Video found via counterpart.", 6)
-                            this_album_song.video_id = counterpart_id
-                        else:
-                            Util.log("Artist Track Video not found. Falling back to original track.", 6)
-                        
-                        return this_album_song
-
+                    Util.log("Match found.", 6)
+                    return this_album_song
             return None
         except Exception as e:
             Util.log("Encountered exception while attempting to get match from album. {}".format(str(e)))
-            return None
-        
-    def get_counterpart_id(self, video_id, video_type: VideoType):
-        try:
-            watch_playlist_tracks = self.ytmusic.get_watch_playlist(video_id)['tracks']
-            track = next(track for track in watch_playlist_tracks if track['videoId'] == video_id)
-            counterpart = track['counterpart']
-            if (counterpart['videoType'] != video_type):
-                raise Exception("Counterpart had videoType {}.".format(counterpart['videoType']))
-            return track['counterpart']['videoId']
-        except Exception as e:
-            Util.log("Encountered exception while attempting to get counterpart. {}".format(str(e)), 5)
             return None
 
     def get_matching_album(self, song, results_to_search = 3):
