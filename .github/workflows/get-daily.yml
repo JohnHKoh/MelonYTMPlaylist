@@ -17,7 +17,7 @@ jobs:
       - name: Restore song cache
         uses: actions/cache@v4
         with:
-          path: MelonYTMPlaylist/src/song_cache.json
+          path: src/song_cache.json
           key: melon-song-cache-${{ runner.os }}
           restore-keys: |
             melon-song-cache-${{ runner.os }}-
@@ -41,5 +41,5 @@ jobs:
         uses: actions/cache/save@v4
         if: always()
         with:
-          path: MelonYTMPlaylist/src/song_cache.json
+          path: src/song_cache.json
           key: melon-song-cache-${{ runner.os }}-${{ github.run_id }}
