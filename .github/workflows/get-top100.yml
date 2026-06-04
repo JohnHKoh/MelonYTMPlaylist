@@ -23,7 +23,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd MelonYTMPlaylist
           python3 -m pip install -r requirements.txt
 
       - name: Run script
@@ -31,7 +30,6 @@ jobs:
           RAW_HEADERS: ${{ secrets.RAW_HEADERS }}
           CONFIG_JSON: ${{ secrets.CONFIG_JSON }}
         run: |
-          cd MelonYTMPlaylist
           echo "$RAW_HEADERS" > raw_headers.txt
           echo "$CONFIG_JSON" > config.json
           cd src
