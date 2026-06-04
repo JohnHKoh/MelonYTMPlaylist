@@ -2,26 +2,17 @@ from pyquery import PyQuery as pq
 from song import Song
 from util import Util
 
-def get_daily():
+def get_songs(listName: str) -> list:
     """
-    Gets Melon Daily Top 100 List as list of `Song` objects
+    Gets Melon Chart as list of `Song` objects
 
-    :return: List with Melon Daily Top 100 songs
+    :return: List with Melon Top100 songs
     """
-    url = Util.get_config()['playlists']['daily']['url']
-    return get_melon_songs(url)
-
-def get_weekly():
-    """
-    Gets Melon Weekly Top 100 List as list of `Song` objects
-
-    :return: List with Melon Daily Top 100 songs
-    """
-    url = Util.get_config()['playlists']['weekly']['url']
+    url = Util.get_config()['playlists'][listName]['url']
     return get_melon_songs(url)
 
     
-def get_melon_songs(url):
+def get_melon_songs(url: str) -> list:
     songs = []
 
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'}

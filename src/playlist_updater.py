@@ -1,13 +1,17 @@
 import json
 from util import Util
 from ytmusicapi import YTMusic
-from datetime import date, datetime, timedelta
+from datetime import datetime
 from song import Song
 from image_similarity import images_are_similar
 from video_type import VideoType
 import sys
 import time
 import traceback
+from chart import Chart
+from pathlib import Path
+
+CACHE_FILE = Path("song_cache.json")
 
 def create_ytm(config):
     if 'brand_account' in config:
@@ -31,23 +35,27 @@ class PlaylistUpdater:
     ytmusic = create_ytm(config)
 
     def __init__(self):
-        pass
+        if CACHE_FILE.exists():
+            self.local_cache = json.loads(CACHE_FILE.read_text(encoding="utf-8"))
+        else:
+            self.local_cache = {}
 
-    def update_playlist(self, songs, listName, description):
+    def save_cache(self):
+        CACHE_FILE.write_text(json.dumps(self.local_cache, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    def update_playlist(self, chart: Chart):
         """
         Updates playlist from config with song list
 
-        :param songs: List of `Song` objects
-        :param listName: Key to search `playlists` value in "config.json"
-        :param description: Updated description of playlist. Can specify `{playlist_url}` and `{today}` to be formatted
+        :param chart: Chart object
         """
-        self.playlistId = self.config['playlists'][listName]['playlist_id']
+        self.playlistId = self.config['playlists'][chart.listName]['playlist_id']
         success = False
         for i in range(self.RETRY_COUNT):
             try:
                 Util.log("Playlist update attempt #{}...".format(i + 1))
                 self.playlist = self.get_playlist()
-                self._update_playlist(self.playlist, songs, listName, description)
+                self._update_playlist(self.playlist, chart)
                 Util.log("Verifying update...")
                 Util.log("Getting playlist...", 2)
                 playlist = self.get_playlist()
@@ -69,26 +77,24 @@ class PlaylistUpdater:
             Util.log("Playlist update failed at {}.".format(datetime.now()))
             sys.exit(1)
 
-    def _update_playlist(self, playlist, songs, listName, description):
+    def _update_playlist(self, playlist, chart):
         """
         Internal function to updates playlist from config with song list
 
-        :param songs: List of `Song` objects
-        :param listName: Key to search `playlists` value in "config.json"
-        :param description: Updated description of playlist. Can specify `{playlist_url}` and `{today}` to be formatted
+        :param chart: Chart object
         """
 
         Util.log("Starting playlist update at {}...".format(datetime.now()))
         
         # Various sleep calls seem to prevent transient 409 Conflict errors
         try:
-            to_add = self.get_song_ids(songs)
+            to_add = self.get_song_ids(chart.songs)
             if playlist['trackCount'] > 0:
                 self.clear_playlist()
                 time.sleep(3)
             self.add_playlist_items(to_add)
             time.sleep(3)
-            self.update_playlist_description(listName, description)
+            self.update_playlist_info(chart)
             time.sleep(3)
         except Exception as e:
             Util.log("Encountered exception while trying to update playlist. {}".format(str(e)))
@@ -96,22 +102,14 @@ class PlaylistUpdater:
         
         Util.log("Playlist update attempt completed at {}.".format(datetime.now()))
 
-    def update_playlist_description(self, listName, description):
-        Util.log("Updating playlist description...")
-        date_str = "Unknown"
-        today = date.today()
-        if listName == "daily":
-            date_str = today.strftime("%Y.%m.%d")
-        if listName == "weekly":
-            past_monday = today - timedelta(days=today.weekday(), weeks=1)
-            past_sunday = past_monday + timedelta(days=6)
-            date_str = "{past_monday} ~ {past_sunday}".format(past_monday=past_monday.strftime("%Y.%m.%d"), past_sunday=past_sunday.strftime("%Y.%m.%d"))
-        description = description.format(playlist_url=self.config['playlists'][listName]['url'], date=date_str)
-        edit_response = self.ytmusic.edit_playlist(self.playlistId, description=description)
+    def update_playlist_info(self, chart: Chart):
+        Util.log("Updating playlist info...")
+        description = chart.description.format(playlist_url=self.config['playlists'][chart.listName]['url'], date=chart.date_str)
+        edit_response = self.ytmusic.edit_playlist(self.playlistId, title=chart.title, description=description)
         if 'SUCCEEDED' in edit_response:
-            Util.log("Playlist description updated.")
+            Util.log("Playlist info updated.")
         else:
-            Util.log("Playlist description could not be updated.")
+            Util.log("Playlist info could not be updated.")
             Util.log(json.dumps(edit_response))
 
     def get_playlist(self):
@@ -155,12 +153,22 @@ class PlaylistUpdater:
 
         Util.log("#{}: Searching for '{}'".format(index + 1, search_query), 2)
 
+        if search_query in self.local_cache:
+            Util.log("Cache hit for '{}'".format(search_query), 3)
+            song.video_id = self.local_cache[search_query]
+            return song
+
         if search_query in manual_fixes:
             Util.log("Manual fix for '{}'".format(search_query), 3)
             song.video_id = manual_fixes[search_query]
+            self.local_cache[search_query] = manual_fixes[search_query]
+            self.save_cache()
             return song
-        
-        return self.search_for_song(song, search_query)
+
+        result = self.search_for_song(song, search_query)
+        self.local_cache[search_query] = result.video_id
+        self.save_cache()
+        return result
     
     def search_for_song(self, song, search_query):
         results = self.ytmusic.search(search_query, "songs")

@@ -1,9 +1,8 @@
-name: Weekly Melon Playlist
+name: Top100 Melon Playlist
 
 on:
   schedule:
-    # Runs at 7 AM UTC every Monday
-    - cron: "0 7 * * MON"
+    - cron: "0 * * * *"
   workflow_dispatch:
 
 jobs:
@@ -18,9 +17,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: MelonYTMPlaylist/src/song_cache.json
-          key: melon-song-cache-${{ runner.os }}
+          key: song-cache-${{ runner.os }}
           restore-keys: |
-            melon-song-cache-${{ runner.os }}-
+            song-cache-${{ runner.os }}-
 
       - name: Install dependencies
         run: |
@@ -37,11 +36,11 @@ jobs:
           echo "$CONFIG_JSON" > config.json
           cd src
           python setup.py
-          python weekly.py
+          python top100.py
 
       - name: Save cache
         uses: actions/cache/save@v4
         if: always()
         with:
           path: MelonYTMPlaylist/src/song_cache.json
-          key: melon-song-cache-${{ github.run_id }}
+          key: song-cache-${{ runner.os }}-${{ github.run_id }}

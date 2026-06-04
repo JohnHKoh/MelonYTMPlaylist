@@ -2,3 +2,4 @@ __pycache__
 /config.json
 /headers_auth.json
 /raw_headers.txt
+src/song_cache.json
