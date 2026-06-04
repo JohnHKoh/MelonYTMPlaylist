@@ -1,4 +1,3 @@
-import melon_retriever
 from playlist_updater import PlaylistUpdater
 from datetime import datetime
 from zoneinfo import ZoneInfo

@@ -1,4 +1,3 @@
-import melon_retriever
 from playlist_updater import PlaylistUpdater
 from datetime import date, timedelta
 from chart import Chart

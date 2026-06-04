@@ -1,10 +1,9 @@
-import melon_retriever
 from playlist_updater import PlaylistUpdater
 from datetime import date
 from chart import Chart
 
 listName = "daily"
-today = date.today
+today = date.today()
 date_str = today.strftime("%Y.%m.%d")
 description = """
 Melon(Korean: 멜론) is a South Korean online music store and music streaming service. 
