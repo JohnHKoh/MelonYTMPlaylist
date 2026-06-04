@@ -153,16 +153,16 @@ class PlaylistUpdater:
 
         Util.log("#{}: Searching for '{}'".format(index + 1, search_query), 2)
 
-        if search_query in self.local_cache:
-            Util.log("Cache hit for '{}'".format(search_query), 3)
-            song.video_id = self.local_cache[search_query]
-            return song
-
         if search_query in manual_fixes:
             Util.log("Manual fix for '{}'".format(search_query), 3)
             song.video_id = manual_fixes[search_query]
             self.local_cache[search_query] = manual_fixes[search_query]
             self.save_cache()
+            return song
+
+        if search_query in self.local_cache:
+            Util.log("Cache hit for '{}'".format(search_query), 3)
+            song.video_id = self.local_cache[search_query]
             return song
 
         result = self.search_for_song(song, search_query)
